@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CryptoLiquidations.Migrations
 {
     [DbContext(typeof(CryptoDbContext))]
-    [Migration("20220308192912_CryptoDB")]
-    partial class CryptoDB
+    [Migration("20220505113530_Renamed-TotalLiquidation")]
+    partial class RenamedTotalLiquidation
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,7 +24,7 @@ namespace CryptoLiquidations.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("CryptoLiquidations.Models.liquidationData", b =>
+            modelBuilder.Entity("CryptoLiquidations.Models.LiquidationData", b =>
                 {
                     b.Property<int>("LD_ID")
                         .ValueGeneratedOnAdd()
@@ -33,27 +33,58 @@ namespace CryptoLiquidations.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LD_ID"), 1L, 1);
 
                     b.Property<string>("LD_12HrLiquidation")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LD_1HrLiquidation")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LD_24HrLiquidation")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LD_4HrLiquidation")
-                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LD_LargestSingleLiquidation")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("LD_Time")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("LD_TotalLiquidations")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("LD_ID");
 
                     b.ToTable("Liquidations");
+                });
+
+            modelBuilder.Entity("CryptoLiquidations.Models.LiquidationGraph", b =>
+                {
+                    b.Property<int>("LG_ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LG_ID"), 1L, 1);
+
+                    b.Property<string>("LG_12HourGraph")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LG_1HourGraph")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LG_24HourGraph")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LG_4HourGraph")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LG_Time")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("LG_ID");
+
+                    b.ToTable("LiquidationGraphs");
                 });
 
             modelBuilder.Entity("CryptoLiquidations.Models.SymbolLiquidationData", b =>

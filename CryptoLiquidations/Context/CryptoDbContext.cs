@@ -10,10 +10,11 @@ namespace CryptoLiquidations.Context
 
         }
 
-        public DbSet<LiquadationData>? Liquidations { get; set; }
+        public DbSet<LiquidationData>? Liquidations { get; set; }
         public DbSet<SymbolLiquidationData>? SymbolLiquidations { get; set; }
+        public DbSet<HistoricalLiquidations>? HistoricalLiquidations { get; set; }
+        public DbSet<LiquidationGraph>? LiquidationGraphs { get; set; }
 
-       
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

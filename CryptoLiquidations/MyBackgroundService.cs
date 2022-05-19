@@ -1,8 +1,11 @@
 ﻿using CryptoLiquidations.Context;
+using CryptoLiquidations.Methods;
 using CryptoLiquidations.Models;
 using Microsoft.Extensions.DependencyInjection;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Support.UI;
+using System.Drawing;
 
 namespace CryptoLiquidations
 {
@@ -10,24 +13,26 @@ namespace CryptoLiquidations
     {
         private readonly ILogger<MyBackgroundService> _logger;
 
-
+        private IWebHostEnvironment _webHostEnvironment;
       
         public IServiceProvider Services { get; set; }
 
         public IWebDriver? Driver;
-        public IList<LiquadationData>? ldList;
-        public MyBackgroundService(ILogger<MyBackgroundService> logger, IServiceProvider services)
+        public IList<LiquidationData>? ldList;
+        public MyBackgroundService(ILogger<MyBackgroundService> logger, IServiceProvider services, IWebHostEnvironment webHostEnvironment)
         {
 
             Services = services;
 
             _logger = logger;
 
-     
+            _webHostEnvironment = webHostEnvironment;
 
-            Driver = new ChromeDriver();
+            SeleniumFunctions sf = new SeleniumFunctions();
 
-            Driver.Navigate().GoToUrl("https://www.coinglass.com/LiquidationData");
+            Driver = sf.executeChromeBrowser();
+
+            sf.removeAdverts(Driver);
         }
 
      
@@ -39,36 +44,82 @@ namespace CryptoLiquidations
 
             while (!stoppingToken.IsCancellationRequested)
             {
-
-                var liquidations = new LiquadationData();
-
-
-
-
-                liquidations.LD_1HrLiquidation = Driver.FindElement(By.XPath("//*[@id=\"__next\"]/div/div[4]/div[3]/div[1]/div/div[2]/div[1]/div[3]/span")).Text;
-
-                liquidations.LD_4HrLiquidation = Driver.FindElement(By.XPath("//*[@id=\"__next\"]/div/div[4]/div[3]/div[1]/div/div[2]/div[2]/div[3]/span")).Text;
-
-                liquidations.LD_12HrLiquidation = Driver.FindElement(By.XPath("//*[@id=\"__next\"]/div/div[4]/div[3]/div[1]/div/div[2]/div[3]/div[3]/span")).Text;
-
-                liquidations.LD_24HrLiquidation = Driver.FindElement(By.XPath("//*[@id=\"__next\"]/div/div[4]/div[3]/div[1]/div/div[2]/div[4]/div[3]/span")).Text;
-
-
-
-
-                Console.WriteLine(liquidations);
-
-                using (var scope = Services.CreateScope())
+                if(Driver == null)
                 {
-                    var context = scope.ServiceProvider.GetService<CryptoDbContext>();
+                    break;
+                }
+                var liquidations = new LiquidationData();
+
+                Driver.Navigate().Refresh();
+
+                try
+                {
+                    TotalLiquidations lt = new TotalLiquidations();
+                    HistoricalLiquidations hl = new HistoricalLiquidations();
+                    HistoricalLiquidationsFunctions hlf = new HistoricalLiquidationsFunctions();
+              
+                    liquidations = lt.captureTotalLiquidations(Driver);
+
+                    hl =  hlf.captureHistoricalLiquidations(Driver);
+
+                    hlf.printHistoricalLiquidations(hl);
 
 
-                    context.Liquidations.Add(liquidations);
+                    using (var scope = Services.CreateScope())
+                    {
+                        var context = scope.ServiceProvider.GetService<CryptoDbContext>();
 
-                    context.SaveChanges();
+                        if (context == null)
+                        {
+                            break;
+                        }
+
+                        LiquidationGraph lg = new LiquidationGraph();
+                        if (context.LiquidationGraphs!= null)
+                        {
+                            lg = context.LiquidationGraphs.FirstOrDefault();
+                        }
+                         
+               
+                        
+
+                        ScreenshotGraph sg = new ScreenshotGraph();
+
+                        lg = sg.getGraphScreenshots(lg, Driver, _webHostEnvironment);
+
+                        var lastEntry = context.HistoricalLiquidations.OrderBy(i => i.HL_ID).LastOrDefault();
+
+                        if(lastEntry != null)
+                        {
+                            if (lastEntry.HL_Site == hl.HL_Site && lastEntry.HL_Time == hl.HL_Time && lastEntry.HL_QuantityInCrypto == hl.HL_QuantityInCrypto)
+                            {
+                                Console.WriteLine("Awaiting New Historical Liquidation");
+                            }
+                            else
+                            {
+                                context.HistoricalLiquidations.Add(hl);
+                                Console.WriteLine("New Historical Liquidation Added");
+                            }
+                        }
+                        else
+                        {
+                            context.HistoricalLiquidations.Add(hl);
+                        }
+
+                        context.LiquidationGraphs.Update(lg);
+
+                        context.Liquidations.Add(liquidations);
+
+                        context.SaveChanges();
+
+                    }
+
 
                 }
-
+                catch(Exception e)
+                {
+                    Console.WriteLine(e);
+                }
 
                 await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
 

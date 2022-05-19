@@ -4,6 +4,7 @@ using CryptoLiquidations.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CryptoLiquidations.Migrations
 {
     [DbContext(typeof(CryptoDbContext))]
-    partial class CryptoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220506113310_Added-HistoricalLiquidations")]
+    partial class AddedHistoricalLiquidations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -39,10 +41,10 @@ namespace CryptoLiquidations.Migrations
                     b.Property<string>("HL_Price")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("HL_QuantityInCrypto")
+                    b.Property<string>("HL_QuanitityInCrypto")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("HL_QuantityInDollars")
+                    b.Property<string>("HL_QuanityInDollars")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("HL_Site")
