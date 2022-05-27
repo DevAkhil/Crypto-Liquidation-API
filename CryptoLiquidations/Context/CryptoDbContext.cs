@@ -15,6 +15,8 @@ namespace CryptoLiquidations.Context
         public DbSet<HistoricalLiquidations>? HistoricalLiquidations { get; set; }
         public DbSet<LiquidationGraph>? LiquidationGraphs { get; set; }
 
+
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

@@ -30,7 +30,7 @@ namespace CryptoLiquidations
 
             SeleniumFunctions sf = new SeleniumFunctions();
 
-            Driver = sf.executeChromeBrowser();
+            Driver = sf.executeChromeBrowser(webHostEnvironment);
 
             sf.removeAdverts(Driver);
         }

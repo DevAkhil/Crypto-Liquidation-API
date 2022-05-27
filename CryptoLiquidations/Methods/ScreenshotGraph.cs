@@ -13,7 +13,12 @@ namespace CryptoLiquidations.Models
 
         public LiquidationGraph getGraphScreenshots(LiquidationGraph lg, IWebDriver Driver, IWebHostEnvironment _environment)
         {
+            if(lg == null)
+            {
+                lg = new LiquidationGraph();
+            }
 
+       
             lg.LG_Time = DateTime.Now.ToString();
 
 

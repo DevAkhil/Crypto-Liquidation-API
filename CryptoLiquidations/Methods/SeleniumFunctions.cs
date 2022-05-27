@@ -1,20 +1,33 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using System.Drawing;
+using System;
+using System.IO;
+using System.Reflection;
+using Microsoft.AspNetCore.Hosting;
 
 namespace CryptoLiquidations.Methods
 {
     public class SeleniumFunctions
     {
-        public IWebDriver executeChromeBrowser()
+
+
+
+        public IWebDriver executeChromeBrowser(IWebHostEnvironment webHostEnvironment)
         {
+
+     
+
             IWebDriver Driver;
-             ChromeOptions chromeOptions = new ChromeOptions();
+
+            ChromeDriverService service = ChromeDriverService.CreateDefaultService(webHostEnvironment.ContentRootPath + @"GoogleChromePortable\");
+            ChromeOptions chromeOptions = new ChromeOptions();
 
             chromeOptions.AddAdditionalCapability("resolution", "1920x1080", true);
             chromeOptions.AddArgument("--headless");
+            chromeOptions.BinaryLocation = webHostEnvironment.ContentRootPath + @"GoogleChromePortable\App\Chrome-bin\chrome.exe";
 
-            Driver = new ChromeDriver(chromeOptions);
+            Driver = new ChromeDriver(service,chromeOptions);
 
             Driver.Navigate().GoToUrl("https://www.coinglass.com/LiquidationData");
 

@@ -33,7 +33,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 
-builder.Services.AddDbContext<CryptoDbContext>(options => options.UseSqlServer(
+builder.Services.AddDbContext<CryptoDbContext>(options => options.UseNpgsql(
     builder.Configuration.GetConnectionString("DefaultConnection")
     ));
 
