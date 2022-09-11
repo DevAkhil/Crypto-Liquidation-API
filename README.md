@@ -37,7 +37,7 @@ To clone and run this application, you'll need [Git](https://git-scm.com) and [V
 
 ```bash
 # Clone this repository
-$ git clone https://github.com/DevAkhil/Messanger-King.git
+$ git clone git@github.com:DevAkhil/Crypto-Liquidation-API.git
 
 #Download the latest Chrome Portable and Chromedriver(https://chromedriver.chromium.org/)
 $ Place extracted chrome folder (GoogleChromePortable) in the root drirectory.
